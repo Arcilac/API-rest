@@ -1,5 +1,5 @@
-import { v4 as uuid } from "uuid";
-import MapStore from "../lib/mapstore.js";
+import MapStore from "../lib/mapstore.js"
+import { v4 as uuid } from "uuid"
 
 // Note {
 //  id: string
@@ -7,69 +7,68 @@ import MapStore from "../lib/mapstore.js";
 //  body: string
 //  lastEdited: Date
 // }
-const NOTES = new Map();
-const store = new MapStore("notes.json");
+const NOTES = new Map()
+const store = new MapStore("notes.json")
 
 store.read().then(
   (notes) => {
     for (let [id, note] of notes) {
-      NOTES.set(id, note);
+      NOTES.set(id, note)
     }
   },
   (err) => {
-    console.error(err);
-  }
-);
+    console.error(err)
+  },
+)
 
 export function getNotes(sort) {
-  const notes = Array.from(NOTES.values());
+  const notes = Array.from(NOTES.values())
   notes.sort((a, b) => {
     if (sort === "asc") {
-      return a.lastEdited - b.lastEdited;
+      return a.lastEdited - b.lastEdited
     } else {
-      return b.lastEdited - a.lastEdited;
+      return b.lastEdited - a.lastEdited
     }
-  });
-  return notes;
+  })
+  return notes
 }
 
 export async function createNote({ title, body }) {
-  const id = uuid();
-  const lastEdited = Date.now();
+  const id = uuid()
+  const lastEdited = Date.now()
   const note = {
     id,
     lastEdited,
     title,
     body,
-  };
-  NOTES.set(id, note);
-  await store.save(NOTES);
-  return note;
+  }
+  NOTES.set(id, note)
+  await store.save(NOTES)
+  return note
 }
 
 export async function updateNote(id, { title, body }) {
   if (!NOTES.has(id)) {
-    return null;
+    return null
   }
-  const note = NOTES.get(id);
-  note.title = title ?? note.title;
-  note.body = body ?? note.body;
-  note.lastEdited = Date.now();
-  await store.save(NOTES);
-  return { ...note };
+  const note = NOTES.get(id)
+  note.title = title ?? note.title
+  note.body = body ?? note.body
+  note.lastEdited = Date.now()
+  await store.save(NOTES)
+  return { ...note }
 }
 
 export function getNote(id) {
   if (!NOTES.has(id)) {
-    return null;
+    return null
   }
-  const note = NOTES.get(id);
-  return { ...note };
+  const note = NOTES.get(id)
+  return { ...note }
 }
 
 export async function deleteNote(id) {
-  const success = NOTES.delete(id);
-  await store.save(NOTES);
-  return success;
+  const success = NOTES.delete(id)
+  await store.save(NOTES)
+  return success
 }
-
